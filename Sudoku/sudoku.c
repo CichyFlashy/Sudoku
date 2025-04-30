@@ -4,50 +4,32 @@
 #include <time.h>
 #include "sudoku.h"
 
-void clear_board(int size, int board[MAX_SIZE][MAX_SIZE])
-{
-    for(int row = 0; row < size; row++)
-    {
-        for(int col = 0; col < size; col++)
-        {
-
+void clear_board(int size, int board[MAX_SIZE][MAX_SIZE]) {
+    for(int row = 0; row < size; row++) {
+        for(int col = 0; col < size; col++) {
             board[row][col] = 0;
         }
     }
 }
 
-void print_board(int size, int board[MAX_SIZE][MAX_SIZE])
-{
-    int block_size = 1;
-    while (block_size * block_size < size)
-    {
-        block_size++;
-    }
+void print_board(int size, int board[MAX_SIZE][MAX_SIZE]) {
+    int block_size = get_block_size(size);
 
-    for(int row = 0; row < size; row++)
-        {
-        if(row % block_size == 0 && row != 0)
-        {
-            for (int i = 0; i < size * 3 + block_size - 1; i++)
-            {
+    for(int row = 0; row < size; row++) {
+        if(row % block_size == 0 && row != 0) {
+            for (int i = 0; i < size * 3 + block_size - 1; i++) {
                 printf("-");
             }
             printf("\n");
         }
 
-        for (int col = 0; col < size; col++)
-        {
-
-            if (col % block_size == 0 && col != 0)
-            {
+        for (int col = 0; col < size; col++) {
+            if (col % block_size == 0 && col != 0) {
                 printf(" | ");
             }
-            if (board[row][col] == 0)
-            {
+            if (board[row][col] == 0) {
                 printf(" . ");
-            }
-            else
-            {
+            } else {
                 printf("%2d ", board[row][col]);
             }
         }
@@ -55,20 +37,22 @@ void print_board(int size, int board[MAX_SIZE][MAX_SIZE])
     }
 }
 
-bool is_valid(int size, int board[MAX_SIZE][MAX_SIZE], int row, int col, int num)
-{
-      int block_size = 1;
+int get_block_size(int size) {
+    int block_size = 1;
     while (block_size * block_size < size)
         block_size++;
+    return block_size;
+}
 
-    for (int i = 0; i < size; i++)
-    {
+bool is_valid(int size, int board[MAX_SIZE][MAX_SIZE], int row, int col, int num) {
+    int block_size = get_block_size(size);
+
+    for (int i = 0; i < size; i++) {
         if (board[row][i] == num)
             return false;
     }
 
-    for (int i = 0; i < size; i++)
-    {
+    for (int i = 0; i < size; i++) {
         if (board[i][col] == num)
             return false;
     }
@@ -76,10 +60,8 @@ bool is_valid(int size, int board[MAX_SIZE][MAX_SIZE], int row, int col, int num
     int start_row = (row / block_size) * block_size;
     int start_col = (col / block_size) * block_size;
 
-    for (int i = 0; i < block_size; i++)
-    {
-        for (int j = 0; j < block_size; j++)
-        {
+    for (int i = 0; i < block_size; i++) {
+        for (int j = 0; j < block_size; j++) {
             if (board[start_row + i][start_col + j] == num)
                 return false;
         }
@@ -88,10 +70,8 @@ bool is_valid(int size, int board[MAX_SIZE][MAX_SIZE], int row, int col, int num
     return true;
 }
 
-void mix(int *array, int n)
-{
-    for (int i = n - 1; i > 0; i--)
-    {
+void mix(int *array, int n) {
+    for (int i = n - 1; i > 0; i--) {
         int j = rand() % (i + 1);
         int temp = array[i];
         array[i] = array[j];
@@ -99,26 +79,20 @@ void mix(int *array, int n)
     }
 }
 
-bool fill_board(int size, int board[MAX_SIZE][MAX_SIZE])
-{
-    for (int row = 0; row < size; row++)
-    {
-        for (int col = 0; col < size; col++)
-        {
-            if (board[row][col] == 0)
-            {
+bool fill_board(int size, int board[MAX_SIZE][MAX_SIZE]) {
+    for (int row = 0; row < size; row++) {
+        for (int col = 0; col < size; col++) {
+            if (board[row][col] == 0) {
                 int numbers[MAX_SIZE];
                 for (int i = 0; i < size; i++)
                     numbers[i] = i + 1;
 
                 mix(numbers, size);
 
-                for (int i = 0; i < size; i++)
-                {
+                for (int i = 0; i < size; i++) {
                     int num = numbers[i];
 
-                    if (is_valid(size, board, row, col, num))
-                    {
+                    if (is_valid(size, board, row, col, num)) {
                         board[row][col] = num;
 
                         if (fill_board(size, board))
@@ -136,13 +110,11 @@ bool fill_board(int size, int board[MAX_SIZE][MAX_SIZE])
     return true;
 }
 
-void remove_numbers(int size, int board[MAX_SIZE][MAX_SIZE], int difficulty)
-{
+void remove_numbers(int size, int board[MAX_SIZE][MAX_SIZE], int difficulty) {
     int total_cells = size * size;
     int clues_to_keep;
 
-    switch (difficulty)
-    {
+    switch (difficulty) {
         case 1:
             clues_to_keep = (int)(0.6 * total_cells);
             break;
@@ -158,34 +130,28 @@ void remove_numbers(int size, int board[MAX_SIZE][MAX_SIZE], int difficulty)
 
     int cells_to_remove = total_cells - clues_to_keep;
 
-    while (cells_to_remove > 0)
-    {
+    while (cells_to_remove > 0) {
         int row = rand() % size;
         int col = rand() % size;
 
-        if (board[row][col] != 0)
-        {
+        if (board[row][col] != 0) {
             board[row][col] = 0;
             cells_to_remove--;
         }
     }
 }
 
-void save_game(int size, int board[MAX_SIZE][MAX_SIZE], const char* filename)
-{
-     FILE* file = fopen(filename, "w");
-    if (!file)
-    {
+void save_game(int size, int board[MAX_SIZE][MAX_SIZE], const char* filename) {
+    FILE* file = fopen(filename, "w");
+    if (!file) {
         printf("Failed to open file for saving.\n");
         return;
     }
 
     fprintf(file, "%d\n", size);
 
-    for (int row = 0; row < size; row++)
-    {
-        for (int col = 0; col < size; col++)
-        {
+    for (int row = 0; row < size; row++) {
+        for (int col = 0; col < size; col++) {
             fprintf(file, "%d ", board[row][col]);
         }
         fprintf(file, "\n");
@@ -195,35 +161,28 @@ void save_game(int size, int board[MAX_SIZE][MAX_SIZE], const char* filename)
     printf("Game saved to %s\n", filename);
 }
 
-bool load_game(int* size, int board[MAX_SIZE][MAX_SIZE], const char* filename)
-{
-      FILE* file = fopen(filename, "r");
-    if (!file)
-    {
+bool load_game(int* size, int board[MAX_SIZE][MAX_SIZE], const char* filename) {
+    FILE* file = fopen(filename, "r");
+    if (!file) {
         printf("Failed to open file for loading.\n");
         return false;
     }
 
-    if (fscanf(file, "%d", size) != 1)
-    {
+    if (fscanf(file, "%d", size) != 1) {
         printf("Invalid file format.\n");
         fclose(file);
         return false;
     }
 
-    if (*size > MAX_SIZE)
-    {
+    if (*size > MAX_SIZE) {
         printf("Loaded board size too large.\n");
         fclose(file);
         return false;
     }
 
-    for (int row = 0; row < *size; row++)
-    {
-        for (int col = 0; col < *size; col++)
-        {
-            if (fscanf(file, "%d", &board[row][col]) != 1)
-            {
+    for (int row = 0; row < *size; row++) {
+        for (int col = 0; col < *size; col++) {
+            if (fscanf(file, "%d", &board[row][col]) != 1) {
                 printf("Invalid board data in file.\n");
                 fclose(file);
                 return false;
@@ -234,37 +193,30 @@ bool load_game(int* size, int board[MAX_SIZE][MAX_SIZE], const char* filename)
     fclose(file);
     printf("Game loaded from %s\n", filename);
     return true;
-
 }
 
-void make_move(int size, int board[MAX_SIZE][MAX_SIZE])
-{
+void make_move(int size, int board[MAX_SIZE][MAX_SIZE]) {
     int row, col, value;
     printf("Enter your move (row col value), value = 0 to delete, -1 to cancel: ");
-    if (scanf("%d", &row) != 1 || row == -1) return;
-    if (scanf("%d %d", &col, &value) != 2) return;
+    if (scanf("%d %d %d", &row, &col, &value) != 3 || row == -1) return;
 
-    if (row < 0 || row >= size || col < 0 || col >= size)
-    {
+    if (row < 0 || row >= size || col < 0 || col >= size) {
         printf("Invalid coordinates.\n");
         return;
     }
 
-    if (value == 0)
-    {
+    if (value == 0) {
         board[row][col] = 0;
         printf("Value deleted.\n");
         return;
     }
 
-    if (value < 1 || value > size)
-    {
+    if (value < 1 || value > size) {
         printf("Invalid value.\n");
         return;
     }
 
-    if (!is_valid(size, board, row, col, value))
-    {
+    if (!is_valid(size, board, row, col, value)) {
         printf("Move violates Sudoku rules.\n");
         return;
     }
@@ -273,13 +225,10 @@ void make_move(int size, int board[MAX_SIZE][MAX_SIZE])
     printf("Move applied.\n");
 }
 
-void show_hints(int size, int board[MAX_SIZE][MAX_SIZE], int row, int col)
-{
+void show_hints(int size, int board[MAX_SIZE][MAX_SIZE], int row, int col) {
     printf("Hints for cell [%d][%d]: ", row, col);
-    for (int val = 1; val <= size; val++)
-    {
-        if (is_valid(size, board, row, col, val))
-        {
+    for (int val = 1; val <= size; val++) {
+        if (is_valid(size, board, row, col, val)) {
             printf("%d ", val);
         }
     }
@@ -334,8 +283,7 @@ void play_game(int size, int board[MAX_SIZE][MAX_SIZE]) {
     }
 }
 
-void main_menu()
-{
+void main_menu() {
     int board[MAX_SIZE][MAX_SIZE];
     int size = 9;
     int difficulty = 2;
@@ -346,8 +294,7 @@ void main_menu()
 
     time_t start_time = time(NULL);
 
-    while (1)
-    {
+    while (1) {
         printf("\nSudoku Menu\n");
         printf("1. New Game\n");
         printf("2. Load Game\n");
@@ -360,15 +307,21 @@ void main_menu()
         printf("Choose option: ");
         if (scanf("%d", &choice) != 1) break;
 
-        switch (choice)
-        {
+        switch (choice) {
             case 1:
                 printf("Select size (4 / 9 / 16): ");
-                scanf("%d", &size);
+                if (scanf("%d", &size) != 1) {
+                    printf("Invalid size input!\n");
+                    break;
+                }
                 if (size != 4 && size != 9 && size != 16) size = 9;
 
                 printf("Select difficulty (1 = Easy, 2 = Medium, 3 = Hard): ");
-                scanf("%d", &difficulty);
+                if (scanf("%d", &difficulty) != 1) {
+                    printf("Invalid difficulty input!\n");
+                    break;
+                }
+
                 clear_board(size, board);
                 fill_board(size, board);
                 remove_numbers(size, board, difficulty);
