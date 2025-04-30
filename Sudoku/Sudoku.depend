@@ -1,8 +1,15 @@
 # depslib dependency file v1.0
-1745869245 source:c:\users\mcich\desktop\projekty\sudoku\sudoku\main.c
+1746034433 source:c:\users\mcich\desktop\projekty\sudoku\sudoku\main.c
 	<stdio.h>
 	"sudoku.h"
 
-1745861896 c:\users\mcich\desktop\projekty\sudoku\sudoku\sudoku.h
+1746035037 c:\users\mcich\desktop\projekty\sudoku\sudoku\sudoku.h
 	<stdbool.h>
+
+1746034405 source:c:\users\mcich\desktop\projekty\sudoku\sudoku\sudoku.c
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+	<time.h>
+	"sudoku.h"
 

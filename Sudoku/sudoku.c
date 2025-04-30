@@ -240,7 +240,7 @@ bool load_game(int* size, int board[MAX_SIZE][MAX_SIZE], const char* filename)
 void make_move(int size, int board[MAX_SIZE][MAX_SIZE])
 {
     int row, col, value;
-    printf("Enter your move (row col value), or -1 to cancel: ");
+    printf("Enter your move (row col value), value = 0 to delete, -1 to cancel: ");
     if (scanf("%d", &row) != 1 || row == -1) return;
     if (scanf("%d %d", &col, &value) != 2) return;
 
@@ -250,18 +250,17 @@ void make_move(int size, int board[MAX_SIZE][MAX_SIZE])
         return;
     }
 
+    if (value == 0)
+    {
+        board[row][col] = 0;
+        printf("Value deleted.\n");
+        return;
+    }
+
     if (value < 1 || value > size)
     {
         printf("Invalid value.\n");
         return;
-    }
-
-    if (board[row][col] != 0)
-    {
-        printf("Cell is already filled. Overwrite? (y/n): ");
-        char confirm;
-        scanf(" %c", &confirm);
-        if (confirm != 'y' && confirm != 'Y') return;
     }
 
     if (!is_valid(size, board, row, col, value))
@@ -274,6 +273,19 @@ void make_move(int size, int board[MAX_SIZE][MAX_SIZE])
     printf("Move applied.\n");
 }
 
+void show_hints(int size, int board[MAX_SIZE][MAX_SIZE], int row, int col)
+{
+    printf("Hints for cell [%d][%d]: ", row, col);
+    for (int val = 1; val <= size; val++)
+    {
+        if (is_valid(size, board, row, col, val))
+        {
+            printf("%d ", val);
+        }
+    }
+    printf("\n");
+}
+
 void main_menu()
 {
     int board[MAX_SIZE][MAX_SIZE];
@@ -284,6 +296,8 @@ void main_menu()
 
     srand(time(NULL));
 
+    time_t start_time = time(NULL);
+
     while (1)
     {
         printf("\nSudoku Menu\n");
@@ -293,6 +307,8 @@ void main_menu()
         printf("4. Make Move\n");
         printf("5. Show Board\n");
         printf("6. Quit\n");
+        printf("7. Show Hints\n");
+        printf("8. Show Time\n");
         printf("Choose option: ");
         if (scanf("%d", &choice) != 1) break;
 
@@ -308,6 +324,7 @@ void main_menu()
                 clear_board(size, board);
                 fill_board(size, board);
                 remove_numbers(size, board, difficulty);
+                print_board(size, board);
                 break;
 
             case 2:
@@ -333,6 +350,20 @@ void main_menu()
             case 6:
                 printf("Goodbye!\n");
                 return;
+
+            case 7:
+                printf("Enter cell (row col): ");
+                int r, c;
+                scanf("%d %d", &r, &c);
+                if (r >= 0 && r < size && c >= 0 && c < size && board[r][c] == 0)
+                    show_hints(size, board, r, c);
+                else
+                    printf("Invalid cell or not empty.\n");
+                break;
+
+            case 8:
+                printf("Elapsed time: %ld seconds\n", time(NULL) - start_time);
+                break;
 
             default:
                 printf("Invalid option.\n");
