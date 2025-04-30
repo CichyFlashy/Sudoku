@@ -286,6 +286,54 @@ void show_hints(int size, int board[MAX_SIZE][MAX_SIZE], int row, int col)
     printf("\n");
 }
 
+void play_game(int size, int board[MAX_SIZE][MAX_SIZE]) {
+    int choice;
+    char filename[100];
+    time_t start_time = time(NULL);
+
+    while (1) {
+        printf("\n--- Game Menu ---\n");
+        printf("1. Make Move\n");
+        printf("2. Show Board\n");
+        printf("3. Show Hints\n");
+        printf("4. Save Game\n");
+        printf("5. Show Time\n");
+        printf("6. Back to Main Menu\n");
+        printf("Choose option: ");
+        if (scanf("%d", &choice) != 1) break;
+
+        switch (choice) {
+            case 1:
+                make_move(size, board);
+                break;
+            case 2:
+                print_board(size, board);
+                break;
+            case 3:
+                printf("Enter cell (row col): ");
+                int r, c;
+                scanf("%d %d", &r, &c);
+                if (r >= 0 && r < size && c >= 0 && c < size && board[r][c] == 0)
+                    show_hints(size, board, r, c);
+                else
+                    printf("Invalid cell or not empty.\n");
+                break;
+            case 4:
+                printf("Enter filename to save: ");
+                scanf("%s", filename);
+                save_game(size, board, filename);
+                break;
+            case 5:
+                printf("Elapsed time: %ld seconds\n", time(NULL) - start_time);
+                break;
+            case 6:
+                return;
+            default:
+                printf("Invalid option.\n");
+        }
+    }
+}
+
 void main_menu()
 {
     int board[MAX_SIZE][MAX_SIZE];
@@ -324,7 +372,7 @@ void main_menu()
                 clear_board(size, board);
                 fill_board(size, board);
                 remove_numbers(size, board, difficulty);
-                print_board(size, board);
+                play_game(size, board);
                 break;
 
             case 2:
