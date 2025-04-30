@@ -138,7 +138,37 @@ bool fill_board(int size, int board[MAX_SIZE][MAX_SIZE])
 
 void remove_numbers(int size, int board[MAX_SIZE][MAX_SIZE], int difficulty)
 {
-    // TODO
+    int total_cells = size * size;
+    int clues_to_keep;
+
+    switch (difficulty)
+    {
+        case 1:
+            clues_to_keep = (int)(0.6 * total_cells);
+            break;
+        case 2:
+            clues_to_keep = (int)(0.45 * total_cells);
+            break;
+        case 3:
+            clues_to_keep = (int)(0.3 * total_cells);
+            break;
+        default:
+            clues_to_keep = (int)(0.45 * total_cells);
+    }
+
+    int cells_to_remove = total_cells - clues_to_keep;
+
+    while (cells_to_remove > 0)
+    {
+        int row = rand() % size;
+        int col = rand() % size;
+
+        if (board[row][col] != 0)
+        {
+            board[row][col] = 0;
+            cells_to_remove--;
+        }
+    }
 }
 
 void save_game(int size, int board[MAX_SIZE][MAX_SIZE], const char* filename)
