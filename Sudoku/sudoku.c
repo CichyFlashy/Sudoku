@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <time.h>
 #include "sudoku.h"
 
 void clear_board(int size, int board[MAX_SIZE][MAX_SIZE])
@@ -56,12 +57,83 @@ void print_board(int size, int board[MAX_SIZE][MAX_SIZE])
 
 bool is_valid(int size, int board[MAX_SIZE][MAX_SIZE], int row, int col, int num)
 {
-    // TODO
+      int block_size = 1;
+    while (block_size * block_size < size)
+        block_size++;
+
+    for (int i = 0; i < size; i++)
+    {
+        if (board[row][i] == num)
+            return false;
+    }
+
+    for (int i = 0; i < size; i++)
+    {
+        if (board[i][col] == num)
+            return false;
+    }
+
+    int start_row = (row / block_size) * block_size;
+    int start_col = (col / block_size) * block_size;
+
+    for (int i = 0; i < block_size; i++)
+    {
+        for (int j = 0; j < block_size; j++)
+        {
+            if (board[start_row + i][start_col + j] == num)
+                return false;
+        }
+    }
+
+    return true;
+}
+
+void mix(int *array, int n)
+{
+    for (int i = n - 1; i > 0; i--)
+    {
+        int j = rand() % (i + 1);
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
 }
 
 bool fill_board(int size, int board[MAX_SIZE][MAX_SIZE])
 {
-    // TODO
+    for (int row = 0; row < size; row++)
+    {
+        for (int col = 0; col < size; col++)
+        {
+            if (board[row][col] == 0)
+            {
+                int numbers[MAX_SIZE];
+                for (int i = 0; i < size; i++)
+                    numbers[i] = i + 1;
+
+                mix(numbers, size);
+
+                for (int i = 0; i < size; i++)
+                {
+                    int num = numbers[i];
+
+                    if (is_valid(size, board, row, col, num))
+                    {
+                        board[row][col] = num;
+
+                        if (fill_board(size, board))
+                            return true;
+
+                        board[row][col] = 0;
+                    }
+                }
+
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 void remove_numbers(int size, int board[MAX_SIZE][MAX_SIZE], int difficulty)
