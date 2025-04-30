@@ -5,11 +5,6 @@ int main()
 {
     srand(time(NULL));
 
-    int size = 9;
-    int board[MAX_SIZE][MAX_SIZE];
-
-    clear_board(size, board);
-    print_board(size, board);
-
+    main_menu();
     return 0;
 }

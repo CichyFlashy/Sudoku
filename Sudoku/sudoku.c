@@ -173,11 +173,169 @@ void remove_numbers(int size, int board[MAX_SIZE][MAX_SIZE], int difficulty)
 
 void save_game(int size, int board[MAX_SIZE][MAX_SIZE], const char* filename)
 {
-    // TODO
+     FILE* file = fopen(filename, "w");
+    if (!file)
+    {
+        printf("Failed to open file for saving.\n");
+        return;
+    }
+
+    fprintf(file, "%d\n", size);
+
+    for (int row = 0; row < size; row++)
+    {
+        for (int col = 0; col < size; col++)
+        {
+            fprintf(file, "%d ", board[row][col]);
+        }
+        fprintf(file, "\n");
+    }
+
+    fclose(file);
+    printf("Game saved to %s\n", filename);
 }
 
 bool load_game(int* size, int board[MAX_SIZE][MAX_SIZE], const char* filename)
 {
-    // TODO
+      FILE* file = fopen(filename, "r");
+    if (!file)
+    {
+        printf("Failed to open file for loading.\n");
+        return false;
+    }
 
+    if (fscanf(file, "%d", size) != 1)
+    {
+        printf("Invalid file format.\n");
+        fclose(file);
+        return false;
+    }
+
+    if (*size > MAX_SIZE)
+    {
+        printf("Loaded board size too large.\n");
+        fclose(file);
+        return false;
+    }
+
+    for (int row = 0; row < *size; row++)
+    {
+        for (int col = 0; col < *size; col++)
+        {
+            if (fscanf(file, "%d", &board[row][col]) != 1)
+            {
+                printf("Invalid board data in file.\n");
+                fclose(file);
+                return false;
+            }
+        }
+    }
+
+    fclose(file);
+    printf("Game loaded from %s\n", filename);
+    return true;
+
+}
+
+void make_move(int size, int board[MAX_SIZE][MAX_SIZE])
+{
+    int row, col, value;
+    printf("Enter your move (row col value), or -1 to cancel: ");
+    if (scanf("%d", &row) != 1 || row == -1) return;
+    if (scanf("%d %d", &col, &value) != 2) return;
+
+    if (row < 0 || row >= size || col < 0 || col >= size)
+    {
+        printf("Invalid coordinates.\n");
+        return;
+    }
+
+    if (value < 1 || value > size)
+    {
+        printf("Invalid value.\n");
+        return;
+    }
+
+    if (board[row][col] != 0)
+    {
+        printf("Cell is already filled. Overwrite? (y/n): ");
+        char confirm;
+        scanf(" %c", &confirm);
+        if (confirm != 'y' && confirm != 'Y') return;
+    }
+
+    if (!is_valid(size, board, row, col, value))
+    {
+        printf("Move violates Sudoku rules.\n");
+        return;
+    }
+
+    board[row][col] = value;
+    printf("Move applied.\n");
+}
+
+void main_menu()
+{
+    int board[MAX_SIZE][MAX_SIZE];
+    int size = 9;
+    int difficulty = 2;
+    int choice;
+    char filename[100];
+
+    srand(time(NULL));
+
+    while (1)
+    {
+        printf("\nSudoku Menu\n");
+        printf("1. New Game\n");
+        printf("2. Load Game\n");
+        printf("3. Save Game\n");
+        printf("4. Make Move\n");
+        printf("5. Show Board\n");
+        printf("6. Quit\n");
+        printf("Choose option: ");
+        if (scanf("%d", &choice) != 1) break;
+
+        switch (choice)
+        {
+            case 1:
+                printf("Select size (4 / 9 / 16): ");
+                scanf("%d", &size);
+                if (size != 4 && size != 9 && size != 16) size = 9;
+
+                printf("Select difficulty (1 = Easy, 2 = Medium, 3 = Hard): ");
+                scanf("%d", &difficulty);
+                clear_board(size, board);
+                fill_board(size, board);
+                remove_numbers(size, board, difficulty);
+                break;
+
+            case 2:
+                printf("Enter filename to load: ");
+                scanf("%s", filename);
+                load_game(&size, board, filename);
+                break;
+
+            case 3:
+                printf("Enter filename to save: ");
+                scanf("%s", filename);
+                save_game(size, board, filename);
+                break;
+
+            case 4:
+                make_move(size, board);
+                break;
+
+            case 5:
+                print_board(size, board);
+                break;
+
+            case 6:
+                printf("Goodbye!\n");
+                return;
+
+            default:
+                printf("Invalid option.\n");
+        }
+    }
 }
