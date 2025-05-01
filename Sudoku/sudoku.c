@@ -313,6 +313,14 @@ void play_game(int size, int board[MAX_SIZE][MAX_SIZE]) {
     }
 }
 
+void print_instructions() {
+    printf("\n--- Instrukcja ---\n");
+    printf("Celem gry Sudoku jest wypelnienie planszy liczbami tak,\n");
+    printf("aby kazda liczba wystepowala tylko raz w kazdym wierszu,\n");
+    printf("kolumnie i bloku.\n\n");
+
+}
+
 // Menu g³ówne gry
 void main_menu() {
     int board[MAX_SIZE][MAX_SIZE];
@@ -329,12 +337,8 @@ void main_menu() {
         printf("\nSudoku Menu\n");
         printf("1. New Game\n");
         printf("2. Load Game\n");
-        printf("3. Save Game\n");
-        printf("4. Make Move\n");
-        printf("5. Show Board\n");
-        printf("6. Quit\n");
-        printf("7. Show Hints\n");
-        printf("8. Show Time\n");
+        printf("3. Instructions\n");
+        printf("4. Quit\n");
         printf("Choose option: ");
         if (scanf("%d", &choice) != 1) break;
 
@@ -369,36 +373,14 @@ void main_menu() {
                 break;
 
             case 3:
-                printf("Enter filename to save: ");
-                scanf("%s", filename);
-                save_game(size, board, filename);
+                print_instructions();
                 break;
 
             case 4:
-                make_move(size, board);
-                break;
-
-            case 5:
-                print_board(size, board);
-                break;
-
-            case 6:
                 printf("Goodbye!\n");
                 return;
 
-            case 7:
-                printf("Enter cell (row col): ");
-                int r, c;
-                scanf("%d %d", &r, &c);
-                if (r >= 0 && r < size && c >= 0 && c < size && board[r][c] == 0)
-                    show_hints(size, board, r, c);
-                else
-                    printf("Invalid cell or not empty.\n");
-                break;
 
-            case 8:
-                printf("Elapsed time: %ld seconds\n", time(NULL) - start_time);
-                break;
 
             default:
                 printf("Invalid option.\n");
