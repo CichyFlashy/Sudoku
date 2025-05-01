@@ -37,32 +37,32 @@ void print_board(int size, int board[MAX_SIZE][MAX_SIZE]) {
     }
 }
 
-// Funkcja obliczaj¹ca rozmiar bloku w zale¿noœci od rozmiaru planszy
+// Funkcja obliczajÂ¹ca rozmiar bloku w zaleÂ¿noÅ“ci od rozmiaru planszy
 int get_block_size(int size) {
     int block_size = 1;
-    // Obliczanie rozmiaru bloku (dla 9x9, s¹ to bloki 3x3)
+    // Obliczanie rozmiaru bloku (dla 9x9, sÂ¹ to bloki 3x3)
     while (block_size * block_size < size)
         block_size++;
     return block_size;
 }
 
-// Funkcja sprawdzaj¹ca, czy ruch jest poprawny (nie ma powtórzeñ w wierszu, kolumnie i bloku)
+// Funkcja sprawdzajÂ¹ca, czy ruch jest poprawny (nie ma powtÃ³rzeÃ± w wierszu, kolumnie i bloku)
 bool is_valid(int size, int board[MAX_SIZE][MAX_SIZE], int row, int col, int num) {
     int block_size = get_block_size(size);
 
-    // Sprawdzamy, czy liczba nie wystêpuje w tym samym wierszu
+    // Sprawdzamy, czy liczba nie wystÃªpuje w tym samym wierszu
     for (int i = 0; i < size; i++) {
         if (board[row][i] == num)
             return false;
     }
 
-    // Sprawdzamy, czy liczba nie wystêpuje w tej samej kolumnie
+    // Sprawdzamy, czy liczba nie wystÃªpuje w tej samej kolumnie
     for (int i = 0; i < size; i++) {
         if (board[i][col] == num)
             return false;
     }
 
-    // Sprawdzamy, czy liczba nie wystêpuje w tym samym bloku
+    // Sprawdzamy, czy liczba nie wystÃªpuje w tym samym bloku
     int start_row = (row / block_size) * block_size;
     int start_col = (col / block_size) * block_size;
 
@@ -76,7 +76,7 @@ bool is_valid(int size, int board[MAX_SIZE][MAX_SIZE], int row, int col, int num
     return true;
 }
 
-// Funkcja mieszaj¹ca tablicê liczb od 1 do size w celu losowego wype³nienia planszy
+// Funkcja mieszajÂ¹ca tablicÃª liczb od 1 do size w celu losowego wypeÂ³nienia planszy
 void mix(int *array, int n) {
     for (int i = n - 1; i > 0; i--) {
         int j = rand() % (i + 1);
@@ -242,7 +242,24 @@ void show_hints(int size, int board[MAX_SIZE][MAX_SIZE], int row, int col) {
     printf("\n");
 }
 
-// G³ówna funkcja gry
+bool is_board_valid(int size, int board[MAX_SIZE][MAX_SIZE]) {
+    for (int row = 0; row < size; row++) {
+        for (int col = 0; col < size; col++) {
+            int val = board[row][col];
+            if (val == 0)
+                return false;
+            board[row][col] = 0; // tymczasowo wyczyÅ›Ä‡
+            if (!is_valid(size, board, row, col, val)) {
+                board[row][col] = val; // przywrÃ³Ä‡
+                return false;
+            }
+            board[row][col] = val; // przywrÃ³Ä‡
+        }
+    }
+    return true;
+}
+
+// GÂ³Ã³wna funkcja gry
 void play_game(int size, int board[MAX_SIZE][MAX_SIZE]) {
     int choice;
     char filename[100];
@@ -288,10 +305,15 @@ void play_game(int size, int board[MAX_SIZE][MAX_SIZE]) {
             default:
                 printf("Invalid option.\n");
         }
+
+        if (is_board_valid(size, board)) {
+            printf("\nGratulacje! Ukonczono Sudoku w czasie %ld sekund.\n", time(NULL) - start_time);
+            return;
+        }
     }
 }
 
-// Menu g³ówne gry
+// Menu gÂ³Ã³wne gry
 void main_menu() {
     int board[MAX_SIZE][MAX_SIZE];
     int size = 9;
@@ -340,7 +362,10 @@ void main_menu() {
             case 2:
                 printf("Enter filename to load: ");
                 scanf("%s", filename);
-                load_game(&size, board, filename);
+                if (load_game(&size, board, filename))
+                {
+                    play_game(size, board);
+                }
                 break;
 
             case 3:
