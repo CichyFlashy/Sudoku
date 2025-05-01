@@ -35,3 +35,6 @@ Program pozwala użytkownikom na rozwiązywanie plansz Sudoku o różnych rozmia
 ![image](https://github.com/user-attachments/assets/fee3def7-2e03-4290-a6e8-6c4efb60f6ce)
 ![image](https://github.com/user-attachments/assets/c73eaebf-d3ab-495f-91e3-ae52d71ea69e)
 ![image](https://github.com/user-attachments/assets/c875756d-f31e-41c3-a2f0-326da3b052dd)
+
+
+![image](https://github.com/user-attachments/assets/4a15f001-d3b7-48ae-bae3-261ffe6b15d2)
