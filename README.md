@@ -28,3 +28,6 @@ Program pozwala użytkownikom na rozwiązywanie plansz Sudoku o różnych rozmia
 2. Skompiluj program za pomocą kompilatora C:
    ```bash
    gcc -o sudoku sudoku.c
+
+## Screeny działania
+![image](https://github.com/user-attachments/assets/f00103f0-d901-46dd-b561-fa72009f0b2c)
